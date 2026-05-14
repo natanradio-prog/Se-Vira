@@ -51,19 +51,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .secao-btn{flex:1;background:none;border:none;border-radius:10px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;padding:10px 6px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
 .secao-btn:hover{color:var(--text);}
 .secao-btn.active{background:var(--accent);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(29,78,216,.25);}
-.secao-btn.active.pessoal{background:#7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.25);}
+.secao-btn.active.pessoal{background:var(--pes-primary);box-shadow:0 2px 8px rgba(45,106,79,.25);}
 .secao-badge{border-radius:10px;font-size:.68rem;font-weight:700;min-width:18px;padding:1px 5px;text-align:center;background:rgba(255,255,255,.25);}
 .secao-btn:not(.active) .secao-badge{background:var(--surface2);color:var(--muted);}
 
 /* BANNER URGENTE */
-.urgente-banner{background:var(--urgente-bg);border:1px solid var(--urgente-border);border-radius:12px;padding:11px 14px;margin-bottom:12px;display:none;cursor:pointer;box-shadow:var(--shadow);}
+.urgente-banner{background:var(--pes-urgente-bg);border:1px solid var(--pes-urgente-border);border-radius:12px;padding:11px 14px;margin-bottom:12px;display:none;cursor:pointer;box-shadow:var(--shadow);}
 .urgente-banner.visible{display:block;}
 .urgente-banner-top{display:flex;align-items:center;gap:8px;}
-.urgente-banner-top span{font-size:.82rem;color:var(--urgente);flex:1;font-weight:600;}
-.urgente-banner-top em{font-size:.7rem;color:#f87171;font-style:normal;}
+.urgente-banner-top span{font-size:.82rem;color:var(--pes-urgente);flex:1;font-weight:600;}
+.urgente-banner-top em{font-size:.7rem;color:var(--pes-urgente);font-style:normal;opacity:.7;}
 .urgente-lista{margin-top:8px;display:none;flex-direction:column;gap:4px;}
 .urgente-lista.open{display:flex;}
-.urgente-lista-item{font-size:.76rem;padding:5px 0;border-top:1px solid #fecaca;color:var(--text);}
+.urgente-lista-item{font-size:.76rem;padding:5px 0;border-top:1px solid var(--pes-urgente-border);color:var(--text);}
 
 /* ALERTA PRAZOS */
 .alerta-banner{background:#fff1f2;border:1px solid #fca5a5;border-radius:12px;padding:11px 14px;margin-bottom:12px;display:none;cursor:pointer;box-shadow:var(--shadow);}
@@ -87,9 +87,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 
 /* COUNTERS PESSOAL */
 .counters-pessoal{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.counter-card.urgente-card{border-color:var(--urgente-border);background:var(--urgente-bg);}
-.counter-card.urgente-card .value{color:var(--urgente);}
-.counter-card.urgente-card label{color:#f87171;}
+.counter-card.urgente-card{border-color:var(--pes-urgente-border);background:var(--pes-urgente-bg);}
+.counter-card.urgente-card .value{color:var(--pes-urgente);}
+.counter-card.urgente-card label{color:#c05621;}
 
 /* SUB-TABS ARQUIVADAS */
 .subtabs{display:flex;gap:4px;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:3px;box-shadow:var(--shadow);}
@@ -150,10 +150,110 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .btn-new{width:100%;background:var(--accent);border:none;border-radius:13px;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;padding:14px;margin-top:12px;transition:all .2s;box-shadow:0 4px 14px rgba(29,78,216,.3);}
 .btn-new:hover{background:var(--accent2);}
 .btn-new:active{transform:scale(.98);}
-.btn-new.pessoal{background:#7c3aed;box-shadow:0 4px 14px rgba(124,58,237,.3);}
-.btn-new.pessoal:hover{background:#6d28d9;}
+.btn-new.pessoal{background:#2d6a4f;box-shadow:0 4px 14px rgba(45,106,79,.3);}
+.btn-new.pessoal:hover{background:#1b4332;}
 
-/* PAGINAÇÃO */
+/* PESSOAL — paleta própria (verde-casa, terra quente) */
+:root{
+  --pes-primary:#2d6a4f;
+  --pes-primary2:#1b4332;
+  --pes-accent:#52b788;
+  --pes-light:#d8f3dc;
+  --pes-bg:#f0faf4;
+  --pes-urgente:#c05621;
+  --pes-urgente-bg:#fff3e6;
+  --pes-urgente-border:#f6b47a;
+
+  /* cores dos post-its */
+  --postit-0:#fef9c3;  /* amarelo */
+  --postit-1:#d8f3dc;  /* verde claro */
+  --postit-2:#fce4ec;  /* rosa */
+  --postit-3:#e0f2fe;  /* azul claro */
+  --postit-4:#f3e8ff;  /* lilás */
+  --postit-5:#fff3e6;  /* laranja claro */
+}
+
+/* GRID POST-ITS */
+#demandListPes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* CARD POST-IT */
+.postit{
+  border-radius:3px 14px 14px 14px;
+  padding:14px 12px 12px;
+  cursor:pointer;
+  position:relative;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:2px 3px 8px rgba(0,0,0,.13),0 1px 2px rgba(0,0,0,.08);
+  min-height:90px;
+  display:flex;flex-direction:column;gap:6px;
+  animation:fadeIn .2s ease;
+  overflow:hidden;
+}
+.postit::before{
+  /* dobra no canto superior esquerdo */
+  content:'';position:absolute;top:0;left:0;
+  width:14px;height:14px;
+  background:rgba(0,0,0,.12);
+  clip-path:polygon(0 0,100% 0,0 100%);
+  border-radius:0 0 4px 0;
+}
+.postit:hover{transform:translateY(-2px) rotate(0.5deg);box-shadow:4px 6px 14px rgba(0,0,0,.16);}
+.postit.arquivada-card{opacity:.55;filter:grayscale(.4);}
+.postit.urgente-postit{outline:2px solid var(--pes-urgente);outline-offset:1px;}
+
+.postit-title{
+  font-family:'DM Sans',sans-serif;
+  font-size:.88rem;font-weight:700;
+  color:#1a1a1a;line-height:1.3;
+  padding-left:6px; /* espaço da dobra */
+  word-break:break-word;
+  flex:1;
+}
+.postit-footer{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-top:4px;}
+.postit-prazo{font-size:.65rem;font-weight:600;color:#444;}
+.postit-prazo.vencido{color:#b91c1c;}
+.postit-prazo.proximo{color:#92400e;}
+.postit-prazo.ok{color:#374151;}
+.postit-urgente-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--pes-urgente);flex-shrink:0;
+  box-shadow:0 0 0 2px rgba(192,86,33,.25);
+}
+.postit-del{
+  background:rgba(0,0,0,.1);border:none;border-radius:50%;
+  color:#444;cursor:pointer;font-size:.7rem;
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;flex-shrink:0;
+}
+.postit-del:hover{background:rgba(192,86,33,.3);color:#b91c1c;}
+.postit-concluida-stamp{
+  font-size:.55rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.1em;color:#15803d;opacity:.5;
+  border:2px solid #15803d;border-radius:4px;
+  padding:1px 5px;transform:rotate(-8deg);
+  display:inline-block;margin-left:auto;
+}
+#blocoPessoal{background:var(--pes-bg);border-radius:16px;padding:14px;margin-top:-4px;}
+#blocoPessoal .subtab-btn.active{background:var(--pes-primary);box-shadow:0 2px 8px rgba(45,106,79,.25);}
+#blocoPessoal .subtabs{background:#e8f5ee;border-color:#b7e4c7;}
+#blocoPessoal .counter-card:hover{border-color:var(--pes-accent);}
+#blocoPessoal .demand-item{background:#fff;border-color:#b7e4c7;}
+#blocoPessoal .demand-item:hover{border-color:var(--pes-accent);box-shadow:var(--shadow-md);}
+#blocoPessoal .demand-item.urgente-item{border-color:var(--pes-urgente-border);background:#fff8f0;}
+#blocoPessoal .demand-item.urgente-item::before{background:var(--pes-urgente);}
+#blocoPessoal .urgente-badge{background:var(--pes-urgente-bg);color:var(--pes-urgente);border-color:var(--pes-urgente-border);}
+#blocoPessoal .urgente-banner{background:#fff3e6;border-color:var(--pes-urgente-border);}
+#blocoPessoal .urgente-banner span{color:var(--pes-urgente);}
+#blocoPessoal .search-bar{background:#fff;border-color:#b7e4c7;}
+#blocoPessoal .search-bar input:focus~*,#blocoPessoal .search-bar input:focus{border-color:var(--pes-accent);}
+#blocoPessoal .section-title{color:#52796f;}
+#blocoPessoal .btn-icon{border-color:#b7e4c7;color:#52796f;}
+#blocoPessoal .btn-icon:hover{border-color:var(--pes-primary);color:var(--pes-primary);}
+#overlayFormPes .sheet-header h2{color:var(--pes-primary);}
+#overlayFormPes input:focus,#overlayFormPes textarea:focus,#overlayFormPes select:focus{border-color:var(--pes-accent);}
+#overlayFormPes .btn-save{background:var(--pes-primary);box-shadow:0 4px 14px rgba(45,106,79,.3);}
+#overlayFormPes .urgencia-btn.active-urgente{background:var(--pes-urgente-bg);border-color:var(--pes-urgente);color:var(--pes-urgente);}
+.pes-card-bar{background:var(--pes-accent);}   /* borda lateral cards pessoal */
 .pag-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;}
 .pag-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.78rem;padding:7px 14px;transition:all .2s;}
 .pag-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
@@ -1042,8 +1142,8 @@ function renderPessoal(){
 
   document.getElementById('listCountPes').textContent=filtered.length+' tarefa'+(filtered.length!==1?'s':'');
   document.getElementById('demandListPes').innerHTML=filtered.length
-    ?filtered.map(renderCardPes).join('')
-    :'<div class="empty-state">Nenhuma tarefa aqui</div>';
+    ?filtered.map(function(t,i){return renderCardPes(t,i);}).join('')
+    :'<div class="empty-state" style="grid-column:span 2;">Nenhuma tarefa aqui</div>';
 }
 
 function toggleUrgentesBanner(){
@@ -1052,25 +1152,36 @@ function toggleUrgentesBanner(){
   document.getElementById('urgenteToggle').textContent=urgenteBannerOpen?'▲':'▼';
 }
 
-function renderCardPes(t){
+// paleta de cores post-its (rota por índice do array)
+var POSTIT_COLORS=['#fef9c3','#d8f3dc','#fce4ec','#e0f2fe','#f3e8ff','#fff3e6'];
+
+function renderCardPes(t,idx){
   var pc=prazoClass(t.prazo);
   var isArq=t.status==='arquivada';
+  var isCon=t.status==='concluida';
+  var bg=isArq||isCon?'#f1f5f9':POSTIT_COLORS[idx%POSTIT_COLORS.length];
+
   var prazoTxt=t.prazo
-    ?'<span class="demand-prazo '+pc+'">'+(pc==='vencido'?'⚠ ':pc==='proximo'?'⏰ ':'📅 ')+fmtDate(t.prazo)+'</span>'
+    ?'<span class="postit-prazo '+pc+'">'+(pc==='vencido'?'⚠ ':pc==='proximo'?'⏰ ':'📅 ')+fmtDate(t.prazo)+'</span>'
     :'';
-  var obsHtml=t.obs?'<div class="demand-obs">'+escHtml(t.obs)+'</div>':'';
-  var urgClass=(!isArq&&t.urgente)?' urgente-item':'';
-  var borderColor=t.urgente&&!isArq?'var(--urgente)':'#7c3aed';
-  return '<div class="demand-item'+urgClass+(isArq?' arquivada-card':'')+'" style="border-left:3px solid '+borderColor+';" onclick="editTarefaPes(\''+t.id+'\')">'
-    +'<div class="demand-top"><div class="demand-title">'+escHtml(t.titulo)+'</div>'
-    +'<div class="demand-right">'
-    +(t.urgente&&!isArq?'<span class="urgente-badge">🔴 Urgente</span>':'')
-    +(t.status==='concluida'?'<span class="status-badge concluida">Concluída</span>':'')
-    +(t.status==='arquivada'?'<span class="status-badge arquivada">Arquivada</span>':'')
-    +'</div></div>'
-    +'<div class="demand-meta">'+(prazoTxt?'<span class="demand-meta-item">'+prazoTxt+'</span>':'')
-    +'<span class="demand-meta-item" style="font-size:.62rem;">📌 '+fmtDate(t.dataCriacao||'')+'</span></div>'
-    +'<button class="btn-del" onclick="delTarefaPes(event,\''+t.id+'\')">✕</button></div>';
+
+  var urgDot=t.urgente&&!isArq
+    ?'<span class="postit-urgente-dot" title="Urgente"></span>'
+    :'';
+
+  var stamp=isCon
+    ?'<span class="postit-concluida-stamp">✓ feito</span>'
+    :'';
+
+  return '<div class="postit'+(isArq?' arquivada-card':'')+(t.urgente&&!isArq?' urgente-postit':'')+'" style="background:'+bg+';" onclick="editTarefaPes(\''+t.id+'\')">'
+    +'<div class="postit-title">'+escHtml(t.titulo)+'</div>'
+    +'<div class="postit-footer">'
+    +urgDot
+    +(prazoTxt||'<span></span>')
+    +stamp
+    +'<button class="postit-del" onclick="delTarefaPes(event,\''+t.id+'\')">✕</button>'
+    +'</div>'
+    +'</div>';
 }
 
 // FORM PESSOAL
