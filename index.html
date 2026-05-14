@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -198,6 +198,13 @@ select option{background:#fff;}
 .btn-resp-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:2px;transition:color .2s;}
 .btn-resp-del:hover{color:#ef4444;}
 .add-resp-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;}
+.inline-add-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin:6px 0 4px;}
+.btn-add-inline{background:none;border:1px dashed var(--border);border-radius:9px;color:var(--accent);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;padding:8px 14px;width:100%;text-align:left;transition:all .2s;margin-top:4px;}
+.btn-add-inline:hover{border-color:var(--accent);background:var(--accent-light);}
+/* RISCO */
+.risco-item{background:#fff1f2;border:1px solid #fca5a5;border-radius:9px;padding:10px 13px;display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.risco-item span{flex:1;font-size:.82rem;color:#991b1b;}
+.risco-badge{background:#fee2e2;border:1px solid #fca5a5;border-radius:20px;font-size:.6rem;font-weight:700;color:#dc2626;padding:2px 8px;white-space:nowrap;}
 .btn-add-resp{background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;padding:9px 14px;white-space:nowrap;}
 .btn-save{width:100%;margin-top:16px;background:var(--accent);border:none;border-radius:11px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;padding:13px;cursor:pointer;transition:background .2s,transform .1s;box-shadow:0 4px 14px rgba(29,78,216,.3);}
 .btn-save.pessoal-save{background:#7c3aed;box-shadow:0 4px 14px rgba(124,58,237,.3);}
@@ -495,20 +502,41 @@ select option{background:#fff;}
       <h2>⚙ Configurações</h2>
       <button class="btn-close" onclick="closeSettings()">✕</button>
     </div>
+
+    <!-- RESPONSÁVEIS -->
     <div class="settings-label">👤 Responsáveis</div>
     <div class="resp-list" id="respList"></div>
-    <div class="add-resp-row">
+    <!-- novo responsável inline no fim da lista -->
+    <div class="inline-add-row" id="inlineAddResp" style="display:none;">
       <input type="text" id="newRespInput" placeholder="Nome do responsável">
-      <button class="btn-add-resp" onclick="addResp()">+ Adicionar</button>
+      <button class="btn-add-resp" onclick="saveNewResp()">Salvar</button>
     </div>
+    <button class="btn-add-inline" onclick="toggleInlineResp()">+ Novo responsável</button>
+
     <div class="settings-divider"></div>
+
+    <!-- CATEGORIAS -->
     <div class="settings-label">🏷 Categorias</div>
     <div class="resp-list" id="catList"></div>
-    <div class="add-resp-row">
-      <input type="text" id="newCatInput" placeholder="Nova categoria">
-      <button class="btn-add-resp" onclick="addCat()">+ Adicionar</button>
+    <!-- nova categoria inline no fim da lista -->
+    <div class="inline-add-row" id="inlineAddCatSettings" style="display:none;">
+      <input type="text" id="newCatInput" placeholder="Nome da categoria">
+      <button class="btn-add-resp" onclick="saveNewCat()">Salvar</button>
     </div>
+    <button class="btn-add-inline" onclick="toggleInlineCat()">+ Nova categoria</button>
     <p style="font-size:.68rem;color:var(--muted);margin-top:8px;">Categorias em uso não podem ser excluídas.</p>
+
+    <div class="settings-divider"></div>
+
+    <!-- CHAMADA RISCO -->
+    <div class="settings-label">⚠ Chamada Risco</div>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:10px;line-height:1.5;">Demandas marcadas aqui recebem destaque de risco e aparecem agrupadas na lista.</p>
+    <div class="resp-list" id="riscoList"></div>
+    <div class="inline-add-row" id="inlineAddRisco" style="display:none;">
+      <input type="text" id="newRiscoInput" placeholder="Descreva o risco...">
+      <button class="btn-add-resp" onclick="saveNewRisco()">Salvar</button>
+    </div>
+    <button class="btn-add-inline" onclick="toggleInlineRisco()">+ Registrar risco</button>
   </div>
 </div>
 
@@ -574,6 +602,7 @@ var demands      = [];   // demandas do gabinete
 var tarefas      = [];   // tarefas pessoais
 var responsaveis = [];
 var categorias   = [];
+var riscos       = [];   // chamada risco
 
 var secaoAtiva       = 'gabinete';
 var subtabGab        = 'ativas';
@@ -602,14 +631,17 @@ function load(){
     var t=localStorage.getItem('tarefa_pessoal');
     var r=localStorage.getItem('tarefa_resps');
     var c=localStorage.getItem('tarefa_cats');
+    var k=localStorage.getItem('tarefa_riscos');
     if(d) demands=JSON.parse(d);
     if(t) tarefas=JSON.parse(t);
     responsaveis=r?JSON.parse(r):['Assessora Ana','Assessor Bruno','Assessora Carla'];
     categorias=c?JSON.parse(c):DEFAULT_CATS.slice();
+    riscos=k?JSON.parse(k):[];
   }catch(e){
     demands=[];tarefas=[];
     responsaveis=['Assessora Ana','Assessor Bruno','Assessora Carla'];
     categorias=DEFAULT_CATS.slice();
+    riscos=[];
   }
 }
 function persist(){
@@ -617,10 +649,11 @@ function persist(){
   localStorage.setItem('tarefa_pessoal',JSON.stringify(tarefas));
   localStorage.setItem('tarefa_resps',JSON.stringify(responsaveis));
   localStorage.setItem('tarefa_cats',JSON.stringify(categorias));
+  localStorage.setItem('tarefa_riscos',JSON.stringify(riscos));
   if(gAccessToken){clearTimeout(syncTimeout);syncTimeout=setTimeout(saveToDrive,2000);}
 }
 function getAllData(){
-  return JSON.stringify({demands:demands,tarefas:tarefas,responsaveis:responsaveis,categorias:categorias,v:1});
+  return JSON.stringify({demands:demands,tarefas:tarefas,responsaveis:responsaveis,categorias:categorias,riscos:riscos,v:2});
 }
 function applyAllData(json){
   try{
@@ -629,6 +662,7 @@ function applyAllData(json){
     if(d.tarefas)tarefas=d.tarefas;
     if(d.responsaveis)responsaveis=d.responsaveis;
     if(d.categorias)categorias=d.categorias;
+    if(d.riscos)riscos=d.riscos;
     persist();render();
   }catch(e){console.error(e);}
 }
@@ -950,8 +984,10 @@ function closeFormGab(){document.getElementById('overlayFormGab').classList.remo
 // ══════════════════════════════════════════
 function setSubtabPes(tab){
   subtabPes=tab;filtroUrgencia=null;
-  ['pendente','concluida','arquivada'].forEach(function(t){
-    document.getElementById('subPes'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab);
+  var map={pendente:'subPesPendente',concluida:'subPesConcluida',arquivada:'subPesArq'};
+  Object.keys(map).forEach(function(t){
+    var el=document.getElementById(map[t]);
+    if(el) el.classList.toggle('active',t===tab);
   });
   renderPessoal();
 }
@@ -1100,23 +1136,92 @@ function closeFormPes(){document.getElementById('overlayFormPes').classList.remo
 // ══════════════════════════════════════════
 //  SETTINGS
 // ══════════════════════════════════════════
-function openSettings(){renderRespList();renderCatList();document.getElementById('overlaySettings').classList.add('open');}
+// ══════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════
+function openSettings(){renderRespList();renderCatList();renderRiscoList();document.getElementById('overlaySettings').classList.add('open');}
 function closeSettings(){document.getElementById('overlaySettings').classList.remove('open');}
+
+// — Responsáveis —
 function renderRespList(){
   document.getElementById('respList').innerHTML=responsaveis.map(function(r,i){
     return'<div class="resp-item"><span>'+escHtml(r)+'</span><button class="btn-resp-del" onclick="delResp('+i+')">✕</button></div>';
   }).join('');
 }
-function addResp(){var inp=document.getElementById('newRespInput'),n=inp.value.trim();if(!n)return;if(responsaveis.indexOf(n)>-1){showToast('Já existe');return;}responsaveis.push(n);inp.value='';persist();renderRespList();showToast('Adicionado');}
-function delResp(i){var n=responsaveis[i];var inUse=demands.some(function(d){return d.responsavel===n;});if(inUse&&!confirm(n+' está em uso. Remover?'))return;responsaveis.splice(i,1);persist();renderRespList();}
+function toggleInlineResp(){
+  var box=document.getElementById('inlineAddResp');
+  var vis=box.style.display==='grid';
+  box.style.display=vis?'none':'grid';
+  if(!vis){document.getElementById('newRespInput').value='';setTimeout(function(){document.getElementById('newRespInput').focus();},50);}
+}
+function saveNewResp(){
+  var inp=document.getElementById('newRespInput'),n=inp.value.trim();
+  if(!n)return;
+  if(responsaveis.indexOf(n)>-1){showToast('Já existe');return;}
+  responsaveis.push(n);inp.value='';
+  document.getElementById('inlineAddResp').style.display='none';
+  persist();renderRespList();showToast('"'+n+'" adicionado');
+}
+function addResp(){saveNewResp();}
+function delResp(i){
+  var n=responsaveis[i];
+  var inUse=demands.some(function(d){return d.responsavel===n;});
+  if(inUse&&!confirm(n+' está em uso. Remover?'))return;
+  responsaveis.splice(i,1);persist();renderRespList();
+}
+
+// — Categorias —
 function renderCatList(){
   document.getElementById('catList').innerHTML=categorias.map(function(c,i){
     var col=getCatColor(c);var inUse=demands.some(function(d){return d.categoria===c;});
     return'<div class="resp-item"><span style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:'+col+';flex-shrink:0;"></span>'+escHtml(c)+'</span>'+(inUse?'<span style="font-size:.62rem;color:var(--muted);">em uso</span>':'<button class="btn-resp-del" onclick="delCat('+i+')">✕</button>')+'</div>';
   }).join('');
 }
-function addCat(){var inp=document.getElementById('newCatInput'),n=inp.value.trim();if(!n)return;if(categorias.indexOf(n)>-1){showToast('Já existe');return;}categorias.push(n);inp.value='';persist();renderCatList();showToast('Categoria adicionada');}
-function delCat(i){var n=categorias[i];if(demands.some(function(d){return d.categoria===n;})){showToast('Em uso');return;}if(categorias.length<=1){showToast('Mínimo de 1 categoria');return;}categorias.splice(i,1);persist();renderCatList();}
+function toggleInlineCat(){
+  var box=document.getElementById('inlineAddCatSettings');
+  var vis=box.style.display==='grid';
+  box.style.display=vis?'none':'grid';
+  if(!vis){document.getElementById('newCatInput').value='';setTimeout(function(){document.getElementById('newCatInput').focus();},50);}
+}
+function saveNewCat(){
+  var inp=document.getElementById('newCatInput'),n=inp.value.trim();
+  if(!n)return;
+  if(categorias.indexOf(n)>-1){showToast('Já existe');return;}
+  categorias.push(n);inp.value='';
+  document.getElementById('inlineAddCatSettings').style.display='none';
+  persist();renderCatList();showToast('"'+n+'" adicionada');
+}
+function addCat(){saveNewCat();}
+function delCat(i){
+  var n=categorias[i];
+  if(demands.some(function(d){return d.categoria===n;})){showToast('Em uso — não é possível excluir');return;}
+  if(categorias.length<=1){showToast('Mínimo de 1 categoria');return;}
+  categorias.splice(i,1);persist();renderCatList();
+}
+
+// — Chamada Risco —
+function renderRiscoList(){
+  var el=document.getElementById('riscoList');
+  el.innerHTML=riscos.length
+    ?riscos.map(function(r,i){
+        return'<div class="risco-item"><span>'+escHtml(r)+'</span><button class="btn-resp-del" onclick="delRisco('+i+')" style="color:#fca5a5;">✕</button></div>';
+      }).join('')
+    :'<div style="font-size:.75rem;color:var(--muted);padding:6px 0;">Nenhum risco registrado.</div>';
+}
+function toggleInlineRisco(){
+  var box=document.getElementById('inlineAddRisco');
+  var vis=box.style.display==='grid';
+  box.style.display=vis?'none':'grid';
+  if(!vis){document.getElementById('newRiscoInput').value='';setTimeout(function(){document.getElementById('newRiscoInput').focus();},50);}
+}
+function saveNewRisco(){
+  var inp=document.getElementById('newRiscoInput'),n=inp.value.trim();
+  if(!n)return;
+  riscos.push(n);inp.value='';
+  document.getElementById('inlineAddRisco').style.display='none';
+  persist();renderRiscoList();showToast('Risco registrado');
+}
+function delRisco(i){riscos.splice(i,1);persist();renderRiscoList();}
 
 // ══════════════════════════════════════════
 //  RELATÓRIO (GABINETE)
